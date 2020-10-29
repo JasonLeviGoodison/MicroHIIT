@@ -1,4 +1,7 @@
 # MicroHIIT
 Exercise app for training HIIT in micro doses
 
-Screenshot of current look
+Screenshot of current look:
+
+
+![Screenshot](screenshot.png)
