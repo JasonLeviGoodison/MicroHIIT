@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String KEY_REPEAT = "KEY_REPEAT";
     public static final String CHANNEL_ID = "10001";
     private Button button;
-    private int desiredExercises = 3;
+    public static int desiredExercises = 2;
 
     private SharedPreferences sharedPref;
 
@@ -37,29 +37,13 @@ public class MainActivity extends AppCompatActivity {
         button = findViewById(R.id.nextlesson);
         button.setOnClickListener(v -> launchNextLesson());
 
-        //setUpRecurringAlarm();
+        setUpRecurringAlarm();
         buildNotification();
     }
 
     public void launchNextLesson() {
         Intent intent = new Intent(this, Lesson.class);
         startActivity(intent);
-    }
-
-    public void setUpRecurringAlarm() {
-        AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
-
-        Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
-        PendingIntent pi = PendingIntent.getBroadcast(getApplicationContext(),
-                1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        // Set the alarm to start midnight
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-
-        am.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY, pi);
     }
 
     public int setUpAndGetFinishedValue() {
@@ -88,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
             bottomHalf.setVisibility(View.INVISIBLE);
             done.setVisibility(View.VISIBLE);
             done2.setVisibility(View.VISIBLE);
-            button.setText("Bonus Exercise");
+            button.setText(R.string.BonusExercise);
         }
         else {
             tv1.setText(String.valueOf(left));
@@ -121,28 +105,40 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void buildNotification() {
-        createNotificationChannel();
         System.out.println("Setting up a notification");
+        try {
+            createNotificationChannel();
+            AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+            Intent intent = new Intent(getApplicationContext(), NotificationReceiver.class);
+            PendingIntent pi = PendingIntent.getBroadcast(getApplicationContext(),
+                    2, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+            // Set the alarm to start midnight
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(System.currentTimeMillis());
+
+            calendar.set(Calendar.HOUR_OF_DAY, 13);
+            calendar.set(Calendar.MINUTE, 0);
+            am.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pi);
+        } catch (Exception e) {
+            System.out.println("Failed to create a notification. Continuing ...");
+        }
+    }
+
+    public void setUpRecurringAlarm() {
         AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
 
-        Intent intent = new Intent(getApplicationContext(), NotificationReceiver.class);
+        Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
         PendingIntent pi = PendingIntent.getBroadcast(getApplicationContext(),
-                2, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Set the alarm to start midnight
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-
-        calendar.set(Calendar.HOUR_OF_DAY, 10);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
-        am.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pi);
 
-        calendar.set(Calendar.HOUR_OF_DAY, 13);
-        calendar.set(Calendar.MINUTE, 0);
-        am.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pi);
-
-        calendar.set(Calendar.HOUR_OF_DAY, 16);
-        calendar.set(Calendar.MINUTE, 0);
         am.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pi);
     }
 }

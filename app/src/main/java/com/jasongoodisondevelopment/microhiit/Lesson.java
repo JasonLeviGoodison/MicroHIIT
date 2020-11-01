@@ -2,6 +2,7 @@ package com.jasongoodisondevelopment.microhiit;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -22,15 +23,16 @@ public class Lesson extends AppCompatActivity {
     private Button startButton;
     private ProgressBar progressBar;
     private VideoView videoView;
-    private TextView banner;
-    private TextView bannerNum;
+    private TextView banner, descriptionBanner;
     private FrameLayout videoFrame;
-    private static int excerciseAmountMillis = 30 * 1000;
-    private static int lessonBeginsInMillis = 5 * 1000;
+    private static int excerciseAmountMillis = 40 * 1000;
+    private static int lessonBeginsInMillis = 10 * 1000;
+    private static int restForInMillis = 20 * 1000;
     private TextView countDown;
     private SharedPreferences sharedPref;
     private static int sets = 3;
     private int finishedSets = 0;
+    private Exercise exercise;
 
 
     @Override
@@ -43,15 +45,22 @@ public class Lesson extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById((R.id.progressBar));
         videoView = (VideoView) findViewById(R.id.videoview);
         banner = (TextView) findViewById(R.id.exercisesLeftBanner);
-        bannerNum = findViewById(R.id.numExercisesLeft);
+        descriptionBanner = findViewById(R.id.exercisesInDescription);
         videoFrame = findViewById(R.id.video_view_container);
+        exercise = new Exercise();
 
+        descriptionBanner.setText(exercise.toString());
 
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startButton.setVisibility(TextView.INVISIBLE);
                 countDown.setVisibility(TextView.VISIBLE);
+                descriptionBanner.setVisibility(View.INVISIBLE);
+                videoFrame.setBackground(
+                        ResourcesCompat.getDrawable(getResources(),
+                                R.drawable.rounded_video_background,
+                                null));
                 beginLesson();
             }
         });
@@ -67,42 +76,46 @@ public class Lesson extends AppCompatActivity {
 
         System.out.println("finished" + finishedSets);
 
-        if (finishedSets >= sets * 2) {
-           callback = () -> {
-             lessonCompleted();
-             return null;
-           };
+        if (finishedSets >= (sets * 2)) {
+            setBanner("Done!");
+            lessonCompleted();
+            return 0;
+        }
+        else if (finishedSets == 0) {
+            setBanner("Get Ready For");
+            time = lessonBeginsInMillis;
+            message = "Start in ";
         }
         else if (finishedSets % 2 == 0) {
-            time = lessonBeginsInMillis;
+            setBanner("Up Next");
+            time = restForInMillis;
             message = "Break for ";
+        } else {
+            setBanner("GO!");
         }
 
-        finishedSets++;
         startVideo(finishedSets);
-        setBanner(finishedSets);
+        finishedSets++;
         startTimer(time, callback, message);
         return 0;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void startVideo(int finishedSets) {
-        // Use finishedSets to determine which video to play
-        videoFrame.setClipToOutline(true);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            videoFrame.setClipToOutline(true);
+        }
 
         VideoView videoView = findViewById(R.id.videoview);
-        String videoPath = "android.resource://" + getPackageName() + "/" + R.raw.test;
-        Uri uri = Uri.parse(videoPath);
-        System.out.println("URI IS " + uri.getPath());
-        videoView.setVideoURI(uri);
-        videoFrame.setVisibility(View.VISIBLE);
+
+        videoView.setVideoURI(exercise.getExerciseUri(finishedSets));
+        videoView.setVisibility(View.VISIBLE);
         videoView.start();
     }
 
-    private void setBanner(int finishedSets) {
+    private void setBanner(String message) {
         banner.setVisibility(View.VISIBLE);
-        bannerNum.setVisibility(View.VISIBLE);
-        bannerNum.setText("" + (sets - (finishedSets/2)));
+        banner.setText(message);
     }
 
     private void startTimer(int millis, Callable<Integer> callback, String message) {
