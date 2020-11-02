@@ -1,12 +1,11 @@
 package com.jasongoodisondevelopment.microhiit;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -77,26 +76,24 @@ public class Lesson extends AppCompatActivity {
         System.out.println("finished" + finishedSets);
 
         if (finishedSets >= (sets * 2)) {
-            setBanner("Done!");
+            setBanner("Well Done!");
             lessonCompleted();
             return 0;
         }
         else if (finishedSets == 0) {
             setBanner("Get Ready For");
             time = lessonBeginsInMillis;
-            message = "Start in ";
         }
         else if (finishedSets % 2 == 0) {
             setBanner("Up Next");
             time = restForInMillis;
-            message = "Break for ";
         } else {
-            setBanner("GO!");
+            setBanner(exercise.getExerciseName(finishedSets));
         }
 
         startVideo(finishedSets);
         finishedSets++;
-        startTimer(time, callback, message);
+        startTimer(time, callback);
         return 0;
     }
 
@@ -118,14 +115,14 @@ public class Lesson extends AppCompatActivity {
         banner.setText(message);
     }
 
-    private void startTimer(int millis, Callable<Integer> callback, String message) {
+    private void startTimer(int millis, Callable<Integer> callback) {
         progressBar.setProgress(0);
         new CountDownTimer(millis, 50) {
 
             public void onTick(long millisUntilFinished) {
                 long secondsLeft = (millisUntilFinished + 1000) / 1000;
                 int progress = (int)(( (millis - millisUntilFinished) / (double)millis) * 1000);
-                countDown.setText(message + secondsLeft);
+                countDown.setText("0:" + String.format("%02d", secondsLeft));
                 progressBar.setProgress(progress);
             }
 
@@ -141,6 +138,7 @@ public class Lesson extends AppCompatActivity {
     }
 
     private void lessonCompleted() {
+        Button completeButton = findViewById(R.id.completeButton);
         countDown.setText("Exercise Finished!");
         progressBar.setProgress(1000);
         sharedPref = getApplicationContext().getSharedPreferences(
@@ -149,5 +147,14 @@ public class Lesson extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putInt(getString(R.string.finished_exercises_key), curFinished + 1);
         editor.apply();
+
+        videoFrame.setBackground(null);
+        videoView.setVisibility(View.INVISIBLE);
+        completeButton.setVisibility(View.VISIBLE);
+
+        completeButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        });
     }
 }

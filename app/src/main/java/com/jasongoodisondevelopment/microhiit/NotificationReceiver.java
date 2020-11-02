@@ -33,7 +33,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, MainActivity.CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setSmallIcon(R.drawable.notification_icon)
                 .setContentTitle("Get your heart-rate up!")
                 .setContentText("3 minutes is all it takes!")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)

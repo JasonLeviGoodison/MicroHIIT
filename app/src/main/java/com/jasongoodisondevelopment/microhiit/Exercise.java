@@ -38,6 +38,10 @@ public class Exercise {
         return onlyInts;
     }
 
+    public String getExerciseName(int finishedSets) {
+        return exerciseList.get(finishedSets).second;
+    }
+
     public Uri getExerciseUri(int finishedSets) {
         String videoPath = "android.resource://com.jasongoodisondevelopment.microhiit/" ;
         videoPath += exerciseList.get(finishedSets).first;
@@ -51,20 +55,19 @@ public class Exercise {
         StringBuilder str = new StringBuilder();
         int counter = 0;
         for (Pair<Integer, String> exercise : exerciseList) {
-            System.out.println(exercise.second);
-            str.append("- ");
             if (counter == 0) {
-                str.append("Start (10 sec)");
+                counter += 1;
+                continue;
             }
             else if (counter % 2 == 0) {
-                str.append("Break (20 sec)");
+                str.append(String.format("%-8s %12s%n", "Rest", "(20 sec)"));
             } else {
-                str.append(exercise.second);
-                str.append(" (40 sec)");
+                str.append(String.format("%-8s %12s%n", exercise.second, "(40 sec)"));
             }
-            str.append("\n");
             counter += 1;
         }
+        str.append("-----------------------------\n");
+        str.append(String.format("Total       %8s", "(3 mins)"));
         return str.toString();
     }
 }

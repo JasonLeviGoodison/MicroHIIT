@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MicroHIIT</string>
+    <string name="app_name">Slap - Micro HIIT</string>
     <string name="whatsleft1">You Have</string>
     <string name="whatsleft2">Micro-Workouts Left Today</string>
     <string name="preference_file_key">preferences</string>
@@ -8,4 +8,7 @@
     <string name="channel_name">Micro HIIT</string>
     <string name="channel_description">Reminders to exercise!</string>
     <string name="BonusExercise">Bonus Exercise</string>
+    <string name="disclaimer">All information provided within the app is of a general nature and is supposed to be used only for education/entertainment purposes. No information can be taken as medical or other health advice. You agree that use of this information is at your own risk and hold Jason Goodison or any of his associates harmless from any and all losses, liabilities, injuries, or damages resulting from any and all claims. </string>
+    <string name="okay">Okay</string>
+    <string name="disclaimer_title">Disclaimer</string>
 </resources>

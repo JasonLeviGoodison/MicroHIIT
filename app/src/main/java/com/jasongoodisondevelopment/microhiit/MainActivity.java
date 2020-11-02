@@ -1,21 +1,21 @@
 package com.jasongoodisondevelopment.microhiit;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 
 import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.Calendar;
@@ -24,7 +24,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String KEY_REPEAT = "KEY_REPEAT";
     public static final String CHANNEL_ID = "10001";
-    private Button button;
+    private Button nextWorkoutButton;
+    private ImageButton disclaimerButton;
     public static int desiredExercises = 2;
 
     private SharedPreferences sharedPref;
@@ -34,8 +35,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        button = findViewById(R.id.nextlesson);
-        button.setOnClickListener(v -> launchNextLesson());
+        nextWorkoutButton = findViewById(R.id.nextlesson);
+        disclaimerButton = findViewById(R.id.disclaimer);
+        nextWorkoutButton.setOnClickListener(v -> launchNextLesson());
+        disclaimerButton.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setMessage(R.string.disclaimer)
+                .setTitle(R.string.disclaimer_title);
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        });
 
         setUpRecurringAlarm();
         buildNotification();
@@ -72,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
             bottomHalf.setVisibility(View.INVISIBLE);
             done.setVisibility(View.VISIBLE);
             done2.setVisibility(View.VISIBLE);
-            button.setText(R.string.BonusExercise);
+            nextWorkoutButton.setText(R.string.BonusExercise);
         }
         else {
             tv1.setText(String.valueOf(left));
